@@ -1,0 +1,29 @@
+html {
+	height: 100%;
+}
+body {
+    color: white;
+    background: black;
+	background-repeat: no-repeat;
+    text-align: center;
+}
+
+h1 {
+    color: black;
+    font-weight: bold;
+}
+
+a { color: white }
+
+.heatOn {
+	background: -webkit-linear-gradient(khaki, red);
+	background: -moz-linear-gradient(khaki, red);
+	background: linear-gradient(khaki, red);
+	
+}
+
+.heatOff {
+	background: -webkit-linear-gradient(lightblue, darkblue);
+	background: -moz-linear-gradient(lightblue, darkblue);
+    background: linear-gradient(lightblue, darkblue);
+}
