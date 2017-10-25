@@ -1,7 +1,8 @@
 from flask import Flask, send_from_directory, render_template, redirect, jsonify
 import time
-from control import Control
-from gpioSetup import *
+from controlTest import Control
+#from control import Control
+#from gpioSetup import *
 from flask_socketio import SocketIO
 import eventlet
 import socketio
@@ -40,11 +41,11 @@ def disconnect():
 
 @sio.on('toggle')
 def toggleSockIo():
-    print('client sent: toggle')
+    print('client sent sio: toggle')
     control.toggleHeater()
-    #jsonResult = '{"heatOn":"' + str(control.isHeatOn()) + '", "time":"' + getTime()+ '"}'
-    #print ('jsonResult = ' + jsonResult)
-    #sio.emit('toggle', jsonResult, broadcast=True)
+    jsonResult = '{"heatOn":"' + str(control.isHeatOn()) + '", "time":"' + getTime()+ '"}'
+    print ('jsonResult = ' + jsonResult)
+    sio.emit('toggle', jsonResult, broadcast=True)
 
 def toggle_callback(pin):
     print('detected change on %s'%pin)
@@ -53,7 +54,7 @@ def toggle_callback(pin):
     print('sio.emit(\'toggle\', ' + jsonResult + ', broadcast=True)')
 
 #gpio.add_event_detect(PIN_HEAT_ON, gpio.BOTH, toggle_callback, bouncetime=200)
-gpio.add_event_detect(PIN_HEAT_ON, gpio.BOTH, callback=toggle_callback, bouncetime=300)
+##gpio.add_event_detect(PIN_HEAT_ON, gpio.BOTH, callback=toggle_callback, bouncetime=300)
 
 #gpio.add_event_detect(PIN_HEAT_ON, gpio.RISING, callback=toggle_callback, bouncetime=300)
 #gpio.add_event_detect(PIN_HEAT_ON, gpio.FALLING, callback=toggle_callback, bouncetime=300)
