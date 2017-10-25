@@ -1,5 +1,6 @@
 from flask import Flask, send_from_directory, render_template, redirect, jsonify
 import time
+import threading
 from controlTest import Control
 #from control import Control
 #from gpioSetup import *
@@ -8,8 +9,9 @@ import eventlet
 import socketio
 
 app = Flask(__name__)
-sio = SocketIO(app)
+sio = SocketIO(app, async_mode='threading')
 control = Control()
+clients = {}
 
 ## web app handlers
 @app.route('/')
@@ -30,14 +32,27 @@ def getTime() -> str:
 
 ## socket handlers
 @sio.on('clientConnect')
-def handle_messag(message):
+def handleConnect(message):
     print('connection from', message)
+    #addClient(request.namespace, request.namespace.socket.sessid)
     jsonResult = '{"heatOn":"' + str(control.isHeatOn()) + '", "time":"' + getTime()+ '"}'
-    sio.emit('Connect 1st response: ', jsonResult, broadcast=True)
+    sio.emit('Connect 1st response: ', jsonResult)
+
+def addClient(namespace, sessid):
+    if not sessid in clients:
+        clients[sessid] = namespace
+        print ('added ', sessid)
+
+def sendToAll(action, data):
+    if clients.keys():
+        for c in clients.keys():
+            clients[c].socketio.emit(action, data)
 
 @sio.on('disconnect')
 def disconnect():
-    print('client disconnect')
+    print('client disconnect ')
+    #del clients[request.namespace.socket.sessid]
+    
 
 @sio.on('toggle')
 def toggleSockIo():
@@ -45,13 +60,31 @@ def toggleSockIo():
     control.toggleHeater()
     jsonResult = '{"heatOn":"' + str(control.isHeatOn()) + '", "time":"' + getTime()+ '"}'
     print ('jsonResult = ' + jsonResult)
-    sio.emit('toggle', jsonResult, broadcast=True)
+    sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
+    #sendToAll('toggle', jsonResult)
+    print ('sent emit')
+    
 
 def toggle_callback(pin):
     print('detected change on %s'%pin)
     jsonResult = '{"heatOn":"' + str(control.isHeatOn()) + '", "time":"' + getTime()+ '"}'
-    sio.emit('toggle', jsonResult, broadcast=True)
+    sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
     print('sio.emit(\'toggle\', ' + jsonResult + ', broadcast=True)')
+
+def flippingStatus():
+    while(True):
+        time.sleep(5)
+        print ('flippingStatus()')
+        control.toggleHeater()
+        jsonResult = '{"heatOn":"' + str(control.isHeatOn()) + '", "time":"' + getTime()+ '"}'
+        print ('jsonResult = ' + jsonResult)
+        sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
+        #sendToAll('toggle', jsonResult)
+        print ('emited flip')
+
+#t = threading.Thread(target=flippingStatus)
+#t.setDaemon(True)
+#t.start()
 
 #gpio.add_event_detect(PIN_HEAT_ON, gpio.BOTH, toggle_callback, bouncetime=200)
 ##gpio.add_event_detect(PIN_HEAT_ON, gpio.BOTH, callback=toggle_callback, bouncetime=300)
