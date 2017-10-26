@@ -1,9 +1,9 @@
 from flask import Flask, send_from_directory, render_template, redirect, jsonify
 import time
 import threading
-from controlTest import Control
-#from control import Control
-#from gpioSetup import *
+#from controlTest import Control
+from control import Control
+from gpioSetup import *
 from flask_socketio import SocketIO
 import eventlet
 import socketio
@@ -71,6 +71,8 @@ def toggle_callback(pin):
     sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
     print('sio.emit(\'toggle\', ' + jsonResult + ', broadcast=True)')
 
+
+## Testing server generated events
 def flippingStatus():
     while(True):
         time.sleep(5)
@@ -87,7 +89,7 @@ def flippingStatus():
 #t.start()
 
 #gpio.add_event_detect(PIN_HEAT_ON, gpio.BOTH, toggle_callback, bouncetime=200)
-##gpio.add_event_detect(PIN_HEAT_ON, gpio.BOTH, callback=toggle_callback, bouncetime=300)
+gpio.add_event_detect(PIN_HEAT_ON, gpio.BOTH, callback=toggle_callback, bouncetime=10)
 
 #gpio.add_event_detect(PIN_HEAT_ON, gpio.RISING, callback=toggle_callback, bouncetime=300)
 #gpio.add_event_detect(PIN_HEAT_ON, gpio.FALLING, callback=toggle_callback, bouncetime=300)
