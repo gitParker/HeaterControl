@@ -1,5 +1,6 @@
 from gpioSetup import *
 import json
+import random
 
 class Control:
     def toggleHeater(self):
@@ -13,3 +14,6 @@ class Control:
     def isHeatOn(self) -> bool:
         print("isHeatOn=", gpio.input(PIN_HEAT_ON))
         return gpio.input(PIN_HEAT_ON) == 1
+
+    def getTemp(self):
+        return str(round(random.uniform(50, 105), 3))

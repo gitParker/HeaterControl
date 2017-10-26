@@ -1,3 +1,5 @@
+import random
+
 class Control:
     def __init__(self):
         self.heatOn = False;
@@ -8,3 +10,6 @@ class Control:
     def isHeatOn(self) -> bool:
         print("isHeatOn=", self.heatOn)
         return self.heatOn
+
+    def getTemp(self):
+        return str(round(random.uniform(50, 105), 3))

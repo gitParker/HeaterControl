@@ -30,12 +30,15 @@
     <script src="static/jquery-3.2.1.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+	<script src="static/jquery-toggles-master/toggles.min.js"></script>
 	<script src="static/socket.io.2.0.2.js"></script>
 	<script src="static/screenfull.min.js"></script>
 
     <script src="static/shed.js"></script>
     <link rel="stylesheet" href='/static/style.css'/>
-    
+	<link rel="stylesheet" href="static/jquery-toggles-master/css/toggles.css">
+    <link rel="stylesheet" href="static/jquery-toggles-master/css/themes/toggles-iphone.css">
+
     <script>
         $(function() {
             var heatClass = '{{ "heatOn" if control.isHeatOn() else "heatOff" }}';
@@ -44,17 +47,14 @@
     </script>
 </head>
 <body>
-    <h1>Test</h1>
+    <h1><!--Title--></h1>
     
     <br/>
-    <p>
-		<button type="button" id="toggleBtn" class="btn btn-lg btn-default">
-			{{ "On" if control.isHeatOn() else "Off" }}
-		</button>
-	</p>
+	<div id="toggleBtn" class="toggle toggle-iphone"></div>
     <br/>
-    
-    
+	
+	<h3 id="temp">{{ control.getTemp() }} &deg;</h3>
+
     <h3 id="time">{{ dateTime }}</h3>
 </body>
 </html>

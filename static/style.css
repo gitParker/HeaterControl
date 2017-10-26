@@ -27,3 +27,7 @@ a { color: white }
 	background: -moz-linear-gradient(lightblue, darkblue);
     background: linear-gradient(lightblue, darkblue);
 }
+
+#toggleBtn {
+	margin: auto;
+}
