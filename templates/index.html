@@ -43,6 +43,12 @@
         $(function() {
             var heatClass = '{{ "heatOn" if control.isHeatOn() else "heatOff" }}';
             $('body').addClass(heatClass);
+			
+			$('.toggle').toggles({
+				on: {{ 'true' if control.isHeatOn() else 'false' }},
+				height: 50,
+				width: 100
+			});
         })
     </script>
 </head>

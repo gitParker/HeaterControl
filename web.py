@@ -55,19 +55,17 @@ def toggle_callback(pin):
     print('sio.emit(\'toggle\', ' + jsonResult + ', broadcast=True)')
 
 
-## Testing server generated events
-def flippingStatus():
+## Update Temp every once in a while
+def updateStatus():
     while(True):
-        time.sleep(5)
-        print ('flippingStatus()')
-        control.toggleHeater()
+        time.sleep(10)
         jsonResult = makeJson()
-        print ('jsonResult = ' + jsonResult)
+        print ('updateStatus() = ' + jsonResult)
         sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
-        print ('emited flip')
-#t = threading.Thread(target=flippingStatus)
-#t.setDaemon(True)
-#t.start()
+
+t = threading.Thread(target=updateStatus)
+t.setDaemon(True)
+t.start()
 
 gpio.add_event_detect(PIN_HEAT_ON, gpio.BOTH, callback=toggle_callback, bouncetime=10)
 

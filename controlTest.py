@@ -12,4 +12,4 @@ class Control:
         return self.heatOn
 
     def getTemp(self):
-        return str(round(random.uniform(50, 105), 3))
+        return str(round(random.uniform(25, 105), 3))

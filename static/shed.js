@@ -9,12 +9,6 @@ $(function() {
 		socket.emit('clientConnect', navigator.platform + ', ' + navigator.vendor + ', ' + navigator.userAgent);
 	});
 	
-	$('.toggle').toggles({
-		on: false,
-		height: 50,
-		width: 100
-	});
-	
 	$('#toggleBtn').on('toggle', function(e, isOn) {
 		console.log('client sending: toggle');
 		socket.emit('toggle');
