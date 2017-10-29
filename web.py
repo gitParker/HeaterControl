@@ -1,7 +1,7 @@
 from flask import Flask, send_from_directory, render_template, redirect, jsonify
 import time
 import threading
-#from controlTest import *
+##from controlTest import *
 from control import *
 from gpioSetup import *
 from flask_socketio import SocketIO
@@ -16,14 +16,16 @@ clients = {}
 ## web app handlers
 @app.route('/')
 def index():
-    return render_template('index.html', dateTime=getTime(), control=control)
+    (dateStr, timeStr) = getTime()
+    return render_template('index.html', date=dateStr, time=timeStr, isHeadOn=control.isHeatOn(), temp=control.getTemp())
 
 
 def getTime() -> str:
-    return time.strftime("%b %m %Y %I:%M:%S %p")
+    return (time.strftime("%b %d %Y"), time.strftime("%I:%M:%S %p"))
 
 def makeJson():
-    return '{"heatOn":"' + str(control.isHeatOn()) + '", "time":"' + getTime()+ '", "temp":"'+control.getTemp()+'"}'
+    (dateStr, timeStr) = getTime()
+    return '{"heatOn":"' + str(control.isHeatOn()) + '", "date":"' + dateStr + '", "time":"'+timeStr+'", "temp":"'+control.getTemp()+'"}'
 
 ## socket handlers
 @sio.on('clientConnect')
@@ -58,7 +60,7 @@ def toggle_callback(pin):
 ## Update Temp every once in a while
 def updateStatus():
     while(True):
-        time.sleep(10)
+        time.sleep(30)
         jsonResult = makeJson()
         print ('updateStatus() = ' + jsonResult)
         sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)

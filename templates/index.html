@@ -31,6 +31,11 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 	<script src="static/jquery-toggles-master/toggles.min.js"></script>
+	<script src="static/jqwidgets5.4.0/jqwidgets/jqxcore.js"></script>
+	<script src="static/jqwidgets5.4.0/jqwidgets/jqxdraw.js"></script>
+	<script src="static/jqwidgets5.4.0/jqwidgets/jqxdata.js"></script>
+	<script src="static/jqwidgets5.4.0/jqwidgets/jqxexpander.js"></script>
+	<script src="static/jqwidgets5.4.0/jqwidgets/jqxgauge.js"></script>
 	<script src="static/socket.io.2.0.2.js"></script>
 	<script src="static/screenfull.min.js"></script>
 
@@ -38,18 +43,39 @@
     <link rel="stylesheet" href='/static/style.css'/>
 	<link rel="stylesheet" href="static/jquery-toggles-master/css/toggles.css">
     <link rel="stylesheet" href="static/jquery-toggles-master/css/themes/toggles-iphone.css">
+	<link rel="stylesheet" href="static/jqwidgets5.4.0/jqwidgets/styles/jqx.base.css" type="text/css" />
 
     <script>
         $(function() {
-            var heatClass = '{{ "heatOn" if control.isHeatOn() else "heatOff" }}';
+            var heatClass = '{{ "heatOn" if isHeatOn else "heatOff" }}';
             $('body').addClass(heatClass);
 			
 			$('.toggle').toggles({
-				on: {{ 'true' if control.isHeatOn() else 'false' }},
+				on: {{ 'true' if isHeatOn else 'false' }},
 				height: 50,
 				width: 100
 			});
-        })
+			
+			
+            $('#gauge').jqxLinearGauge({
+                orientation: 'horizontal',
+                labels: { interval: 20 },
+                ticksMajor: { size: '10%', interval: 10 },
+                ticksMinor: { size: '5%', interval: 2.5, style: { 'stroke-width': 1, stroke: '#aaaaaa'} },
+				min: -20,
+                max: 110,
+                value: {{ temp }},
+                pointer: { size: '6%' },
+                colorScheme: 'scheme04',
+				showRanges: false,
+				animationDuration: 0,
+				width: 300,
+				height: 100
+            });
+			
+			$('rect')[1].attr.fill = '#F00';
+			$('rect')[1].attr.stroke = '#A00';
+		});
     </script>
 </head>
 <body>
@@ -59,8 +85,12 @@
 	<div id="toggleBtn" class="toggle toggle-iphone"></div>
     <br/>
 	
-	<h3 id="temp">{{ control.getTemp() }} &deg;</h3>
+	<h3 id="temp">{{ temp }} &deg;</h3>
+	<div id="gauge"></div>
 
-    <h3 id="time">{{ dateTime }}</h3>
+    <h3>
+		<div id="date">{{ date }}</div>
+		<div id="time">{{ time }}</div>
+	</h3>
 </body>
 </html>

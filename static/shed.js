@@ -15,8 +15,10 @@ $(function() {
 	});
 	
 	socket.on('toggle', function(dataStr) {
-		let data = $.parseJSON(dataStr);
-		let theToggle = $('#toggleBtn').data('toggles');
+		var data = $.parseJSON(dataStr);
+		var theToggle = $('#toggleBtn').data('toggles');
+		console.log('receiving: ' + dataStr);
+		
 		if (data.heatOn === 'True') {
 			$('body').removeClass('heatOff')
 			$('body').addClass('heatOn');
@@ -27,6 +29,8 @@ $(function() {
 			theToggle.toggle(false, false, true)
 		}
 		$('#temp').html(data.temp + '&deg;');
+		$('#gauge').jqxLinearGauge('value', data.temp);
+		$('#date').html(data.date);
 		$('#time').html(data.time);
 	});
 });

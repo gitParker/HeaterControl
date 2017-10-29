@@ -28,6 +28,6 @@ a { color: white }
     background: linear-gradient(lightblue, darkblue);
 }
 
-#toggleBtn {
+#toggleBtn, #gauge {
 	margin: auto;
 }
