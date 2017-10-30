@@ -56,25 +56,9 @@
 				width: 100
 			});
 			
-			
-            $('#gauge').jqxLinearGauge({
-                orientation: 'horizontal',
-                labels: { interval: 20 },
-                ticksMajor: { size: '10%', interval: 10 },
-                ticksMinor: { size: '5%', interval: 2.5, style: { 'stroke-width': 1, stroke: '#aaaaaa'} },
-				min: -20,
-                max: 110,
-                value: {{ temp }},
-                pointer: { size: '6%' },
-                colorScheme: 'scheme04',
-				showRanges: false,
-				animationDuration: 0,
-				width: 300,
-				height: 100
-            });
-			
-			$('rect')[1].attr.fill = '#F00';
-			$('rect')[1].attr.stroke = '#A00';
+			$('#gauge').jqxLinearGauge({
+				value: {{ temp }},
+			});
 		});
     </script>
 </head>

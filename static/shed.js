@@ -14,6 +14,21 @@ $(function() {
 		socket.emit('toggle');
 	});
 	
+	$('#gauge').jqxLinearGauge({
+		orientation: 'horizontal',
+		labels: { interval: 20, position: 'far' },
+		ticksMajor: { size: '10%', interval: 10 },
+		ticksMinor: { size: '5%', interval: 2.5, style: { 'stroke-width': 1, stroke: '#aaaaaa'} },
+		min: -20,
+		max: 110,
+		pointer: { size: '6%' },
+		colorScheme: 'scheme04',
+		showRanges: false,
+		animationDuration: 0,
+		width: 300,
+		height: 60
+	});
+	
 	socket.on('toggle', function(dataStr) {
 		var data = $.parseJSON(dataStr);
 		var theToggle = $('#toggleBtn').data('toggles');
