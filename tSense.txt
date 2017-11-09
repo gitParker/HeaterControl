@@ -1,0 +1,2 @@
+sudo modprobe w1-gpio w1-therm
+u /sys/bus/w1/devices
