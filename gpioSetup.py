@@ -1,9 +1,9 @@
 import RPi.GPIO as gpio
 
-PIN_HEAT_A = 7
+PIN_HEAT_A = 15 #7
 PIN_HEAT_B = 11
 PIN_HEAT_ON = 13
-PIN_TEMP_IN = 15
+PIN_TEMP_IN = 7 #15
 
 gpio.setwarnings(False)
 gpio.setmode(gpio.BOARD)
