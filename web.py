@@ -1,6 +1,7 @@
 from flask import Flask, send_from_directory, render_template, redirect, jsonify
 import time
 import threading
+import json
 ##from controlTest import *
 from control import *
 from gpioSetup import *
@@ -12,6 +13,7 @@ app = Flask(__name__)
 sio = SocketIO(app, async_mode='threading')
 control = Control()
 clients = {}
+prevStatus = {'temp': None, 'heatOn': None}
 
 ## web app handlers
 @app.route('/')
@@ -59,11 +61,18 @@ def toggle_callback(pin):
 
 ## Update Temp every once in a while
 def updateStatus():
+    global prevStatus
     while(True):
-        time.sleep(30)
+        time.sleep(120)
         jsonResult = makeJson()
-        print ('updateStatus() = ' + jsonResult)
-        sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
+        jsonObj = json.loads(jsonResult)
+        if (prevStatus['temp'] is None or prevStatus['heatOn'] is None):
+            print('setting prevStatus:', jsonResult)
+            prevStatus = jsonObj 
+        elif (prevStatus['temp'] != jsonObj['temp'] or prevStatus['heatOn'] != jsonObj['heatOn']):
+            prevStatus = jsonObj 
+            print('emit from daemon thread')
+            sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
 
 t = threading.Thread(target=updateStatus)
 t.setDaemon(True)

@@ -31,19 +31,15 @@ class Control:
     def getTemp(self) -> float:
         print('getTemp()')
         lines = Control.read_temp_raw()
-        print('lines:', lines[0].strip()[-3:])
         if (lines[0].strip()[-3:] != 'YES'):
-            return 999
+            return str(999)
 
         equals_pos = lines[1].find('t=')
-        print('equals_pos:', equals_pos)
         if equals_pos != -1:
             temp_string = lines[1][equals_pos+2:]
-            print('temp_string:', temp_string)
             temp_c = float(temp_string) / 1000.0
-            print('temp_c', temp_c)
-            temp_f = temp_c * 9.0 / 5.0 + 32.0
-            print('temp_f', temp_f)
-            return temp_f
-        return 999
+            temp_f = round(temp_c * 9.0 / 5.0 + 32.0, 2)
+            print('temp_f', temp_f, 'temp_c', temp_c)
+            return str(temp_f)
+        return str(999)
 
