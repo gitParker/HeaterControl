@@ -25,9 +25,14 @@ def index():
 def getTime() -> str:
     return (time.strftime("%b %d %Y"), time.strftime("%I:%M:%S %p"))
 
-def makeJson():
+def makeJson(tempInStr = 'None'):
+    print('makeJson(', tempInStr, ')')
     (dateStr, timeStr) = getTime()
-    return '{"heatOn":"' + str(control.isHeatOn()) + '", "date":"' + dateStr + '", "time":"'+timeStr+'", "temp":"'+control.getTemp()+'"}'
+    tempOut = tempInStr
+    if (tempInStr == 'None' or tempInStr is None):
+        print('temOut is None...setting it now')
+        tempOut = control.getTemp()
+    return '{"heatOn":"' + str(control.isHeatOn()) + '", "date":"' + dateStr + '", "time":"'+timeStr+'", "temp":"'+tempOut+'"}'
 
 ## socket handlers
 @sio.on('clientConnect')
@@ -46,15 +51,12 @@ def disconnect():
 def toggleSockIo():
     print('client sent sio: toggle')
     control.toggleHeater()
-    jsonResult = makeJson()
-    print ('jsonResult = ' + jsonResult)
-    sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
-    print ('sent emit')
     
 
 def toggle_callback(pin):
-    print('detected change on %s'%pin)
-    jsonResult = makeJson()
+    global prevStatus
+    print('detected change on %s'%pin, 'calling makeJson(', prevStatus['temp'], ')')
+    jsonResult = makeJson(str(prevStatus['temp']))
     sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
     print('sio.emit(\'toggle\', ' + jsonResult + ', broadcast=True)')
 
@@ -63,7 +65,6 @@ def toggle_callback(pin):
 def updateStatus():
     global prevStatus
     while(True):
-        time.sleep(120)
         jsonResult = makeJson()
         jsonObj = json.loads(jsonResult)
         if (prevStatus['temp'] is None or prevStatus['heatOn'] is None):
@@ -73,6 +74,7 @@ def updateStatus():
             prevStatus = jsonObj 
             print('emit from daemon thread')
             sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
+        time.sleep(5)
 
 t = threading.Thread(target=updateStatus)
 t.setDaemon(True)

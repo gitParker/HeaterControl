@@ -13,4 +13,4 @@ gpio.setup(PIN_HEAT_B, gpio.OUT)
 gpio.setup(PIN_TEMP_IN, gpio.IN)
 
 gpio.setup(PIN_HEAT_ON, gpio.IN, pull_up_down=gpio.PUD_UP)
-#gpio.add_event_detect(PIN_HEAT_ON, gpio.BOTH, callback=toggle_callback, bouncetime=300)
+
