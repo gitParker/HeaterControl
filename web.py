@@ -18,21 +18,18 @@ prevStatus = {'temp': None, 'heatOn': None}
 ## web app handlers
 @app.route('/')
 def index():
+    global prevStatus
     (dateStr, timeStr) = getTime()
-    return render_template('index.html', date=dateStr, time=timeStr, isHeadOn=control.isHeatOn(), temp=control.getTemp())
+    return render_template('index.html', date=dateStr, time=timeStr, isHeadOn=control.isHeatOn(), temp=prevStatus['temp'])
 
 
 def getTime() -> str:
     return (time.strftime("%b %d %Y"), time.strftime("%I:%M:%S %p"))
 
-def makeJson(tempInStr = 'None'):
-    print('makeJson(', tempInStr, ')')
+def makeJson():
+    global prevStatus
     (dateStr, timeStr) = getTime()
-    tempOut = tempInStr
-    if (tempInStr == 'None' or tempInStr is None):
-        print('temOut is None...setting it now')
-        tempOut = control.getTemp()
-    return '{"heatOn":"' + str(control.isHeatOn()) + '", "date":"' + dateStr + '", "time":"'+timeStr+'", "temp":"'+tempOut+'"}'
+    return '{"heatOn":"' + str(control.isHeatOn()) + '", "date":"' + dateStr + '", "time":"'+timeStr+'", "temp":"'+str(prevStatus['temp'])+'"}'
 
 ## socket handlers
 @sio.on('clientConnect')
@@ -55,8 +52,8 @@ def toggleSockIo():
 
 def toggle_callback(pin):
     global prevStatus
-    print('detected change on %s'%pin, 'calling makeJson(', prevStatus['temp'], ')')
-    jsonResult = makeJson(str(prevStatus['temp']))
+    print('detected change on %s'%pin, 'calling makeJson()')
+    jsonResult = makeJson()
     sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
     print('sio.emit(\'toggle\', ' + jsonResult + ', broadcast=True)')
 
@@ -65,16 +62,17 @@ def toggle_callback(pin):
 def updateStatus():
     global prevStatus
     while(True):
-        jsonResult = makeJson()
-        jsonObj = json.loads(jsonResult)
+        curTemp = control.getTemp()
+        jsonObj = json.loads(makeJson())
+        jsonObj['temp'] = curTemp
         if (prevStatus['temp'] is None or prevStatus['heatOn'] is None):
-            print('setting prevStatus:', jsonResult)
+            print('setting prevStatus:', json.dumps(jsonObj))
             prevStatus = jsonObj 
         elif (prevStatus['temp'] != jsonObj['temp'] or prevStatus['heatOn'] != jsonObj['heatOn']):
             prevStatus = jsonObj 
-            print('emit from daemon thread')
-            sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
-        time.sleep(60)
+            print('emit from daemon thread:', json.dumps(jsonObj))
+            sio.emit(event='toggle', data=json.dumps(jsonObj), namespace='/', broadcast=True)
+        time.sleep(20)
 
 t = threading.Thread(target=updateStatus)
 t.setDaemon(True)
