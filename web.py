@@ -74,7 +74,7 @@ def updateStatus():
             prevStatus = jsonObj 
             print('emit from daemon thread')
             sio.emit(event='toggle', data=jsonResult, namespace='/', broadcast=True)
-        time.sleep(5)
+        time.sleep(60)
 
 t = threading.Thread(target=updateStatus)
 t.setDaemon(True)
